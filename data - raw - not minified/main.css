@@ -1,0 +1,68 @@
+html{
+	width:100%;
+	height:100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+*, *:before, *:after {
+	-webkit-box-sizing: inherit;
+	-moz-box-sizing: inherit;
+	box-sizing: inherit;
+}
+:focus{
+	outline: none;
+	outline-style:none;
+	box-shadow:none;
+	border-color:transparent;
+}
+body{
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+	
+	background:grey;
+	
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:21px;
+	text-align:center;
+	color:#000;
+}
+.preload{
+	background:url('bg1.gif'), url('buttonLed.png');
+}
+.hdr{
+	max-width:340px;
+	height:36px;
+	margin:2px auto 35px auto;
+	display:none;
+}
+.hdr a{
+	float:right;
+	margin:2px 2px;
+}
+.hdr a:nth-child(1){
+	float:left;
+}
+#buttons{
+	margin:0 auto 0 auto;
+	display:none;
+}
+.btn_cnt{
+	width:292px;
+	height:77px;
+	margin:30px auto 0 auto;
+}
+.btn_label{
+	width:185px;
+	height:46px;
+	float:left;
+	padding:12px 0 0 0;
+	margin:13px auto 0 auto;
+	background:white url('label.gif');
+}
+.btn_cnt a{
+	float:right;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}

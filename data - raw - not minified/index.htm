@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>4ch Relay Controller</title>
+		<link href="main.css" rel="stylesheet" type="text/css" />
+		<link rel="manifest" href="manifest.json">
+		<script type="text/javascript">
+			var relayState = ["0","0","0","0"];
+			/*manifest="relay.appcache"*/
+			
+			/* enable vibration support */
+			navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+			
+			function getRequest(url, callback = false, noans = false){
+				var xh = new XMLHttpRequest();
+				if(!noans){
+					xh.onreadystatechange = function(){
+						if (xh.readyState == 4){
+							if(xh.status == 200) {
+								var result = JSON.parse(xh.responseText);
+								if(callback){
+									callback(result);
+								}
+							}
+						}
+					};
+				}
+				xh.open("GET", url, true);
+				xh.send(null);
+			};
+			
+			
+			function sendState(channel,callback){
+				getRequest("/btn?nr="+(channel-1),function(result){relayState[channel-1] = result.chState; callback();})
+			};
+			
+			function initialize(){
+				getRequest("/init",function(result){
+					var retHtml = "";
+					document.body.style.backgroundImage = "url('bg1.gif')";
+					document.querySelector(".hdr").style.display = "block";
+					
+					for(i=1;i<=4;i++){
+						var tmplbl = eval("result.label"+i);
+						if(tmplbl != ""){
+							if(eval("result.ch"+i) == "0"){
+								norsrc = "buttonLed.png";
+								relayState[i-1] = "0";
+							}else{
+								norsrc = "button.png";
+								relayState[i-1] = "1";
+							}
+							retHtml += '<div class="btn_cnt"><div class="btn_label" id="label_'+i+'">'+tmplbl+'</div><a href="#"><img onmousedown="press(this,'+i+')" src="'+norsrc+'"></a></div>';
+						}
+					}
+					document.getElementById("buttons").innerHTML = retHtml;
+					document.getElementById("buttons").style.display = "block";							
+				});
+			};
+
+			function press(btn,channel){
+				btn.src = "buttonDo.png";				
+				if(navigator.vibrate){navigator.vibrate(20);}
+				sendState(channel, function(){
+					if(relayState[channel-1] == "0"){
+						norsrc = "buttonLed.png";
+					}else{
+						norsrc = "button.png";
+					}
+					setTimeout(function() {
+						btn.src = norsrc;
+					}, 300);
+				});
+			}
+			
+			function cfgmode(){
+				if(confirm("Are you sure you want to reboot into config mode?")){
+					getRequest("/cfgmode", false, true);
+					setTimeout(function() {
+						location.reload(); 
+					}, 5000);
+				}else{
+					return false;
+				}
+			}
+			
+			document.addEventListener("DOMContentLoaded", function() {
+				initialize();
+			}, false);
+		</script>
+	</head> 
+	<body id="index">
+		<div class="hdr">
+			<a href="https://iotappstory.com/community/apps" target="_blank"><img id="button" src="btnIas.gif"></a>
+			<a href="#" onclick="cfgmode();"><img id="button" src="btn-cfg.gif"></a>
+		</div>
+		<div id="buttons"></div>
+	</body>
+</html>
