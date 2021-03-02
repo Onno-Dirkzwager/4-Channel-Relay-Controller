@@ -84,15 +84,18 @@ long debounceDelay = 50;		// the debounce time; increase if the output flickers
 char* updTimer    = "0";                                  // 0 = false, 1 = true
 char* updInt      = "86400";                              // every x sec
 
-char* relayPin1   = "5";
-char* relayPin2   = "13";
-char* relayPin3   = "12";
-char* relayPin4   = "14";
+// Default values, you can change them here or in config mode
+// generic esp8266          // ESP32 Dev Module
+char* relayPin1   = "15";   // "12";
+char* relayPin2   = "14";   // "14";
+char* relayPin3   = "12";   // "27";
+char* relayPin4   = "13";   // "26";
 
 char* relayLabel1 = "";
 char* relayLabel2 = "";
 char* relayLabel3 = "";
 char* relayLabel4 = "";
+
 
 // ================================================ SETUP ================================================
 void setup() {
@@ -127,11 +130,16 @@ void setup() {
     Serial.println(F("*-------------------------------------------------------------------------*"));
   });
 
-	
-  IAS.begin('L');                                         // Optional parameter: What to do with EEPROM on First boot of the app? 'F' Fully erase | 'P' Partial erase(default) | 'L' Leave intact
+  IAS.onFirstBoot([]() {
+    IAS.eraseEEPROM('P');                       // Optional! What to do with EEPROM on First boot of the app? 'F' Fully erase | 'P' Partial erase
+  });
 
-  IAS.setCallHome(atoi(updTimer));                        // Set to true to enable calling home frequently (disabled by default)
-  IAS.setCallHomeInterval(atoi(updInt));                  // Call home interval in seconds, use 60s only for development. Please change it to at least 2 hours in production
+	
+  IAS.begin();                                  // Run IOTAppStory
+
+  if(updTimer == "1") {
+    IAS.setCallHomeInterval(atoi(updInt));      // Call home interval in seconds(disabled by default), 0 = off, use 60s only for development. Please change it to at least 2 hours in production
+  }
 
 
   //-------- Your Setup starts from here ---------------
